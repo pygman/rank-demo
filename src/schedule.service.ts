@@ -10,7 +10,7 @@ export class ScheduleService {
   async handleCron() {
     console.log('==== start schedule ====');
 
-    await this.appService.tt();
+    await this.appService.flushRank();
 
     console.log('==== end schedule ====');
   }

@@ -23,6 +23,8 @@ export class AppService {
 
   FLUSH_LOCK = null;
 
+  TOP_LIMIT = 21;
+
   async flushRank(): Promise<any> {
     const now = new Date();
     const day = Math.floor(now.getTime() / 1000 / 60 / 60 / 24);
@@ -262,10 +264,6 @@ export class AppService {
     return {};
   }
 
-  async tt(): Promise<any> {
-    console.log('tt');
-  }
-
   async getWeeklyRank(): Promise<Week[]> {
     const now = new Date();
     let day = Math.floor(now.getTime() / 1000 / 60 / 60 / 24);
@@ -281,7 +279,7 @@ export class AppService {
         return [];
       }
     }
-    const weeks = await this.weekService.findByDate(day);
+    const weeks = await this.weekService.findByDate(day, this.TOP_LIMIT);
     console.log(
       `get weekly rank ${now} day: ${day} count: ${dayCount} return ${weeks.map(
         (w) => w.address,

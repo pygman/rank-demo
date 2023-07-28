@@ -12,7 +12,7 @@ export class WeekService {
     await this.weekRepository.save(weeks);
   }
 
-  findByDate(date: number) {
+  findByDate(date: number, limit: number) {
     return this.weekRepository.find({
       where: {
         date,
@@ -20,6 +20,7 @@ export class WeekService {
       order: {
         rank: 'ASC',
       },
+      take: limit,
     });
   }
 
