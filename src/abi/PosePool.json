@@ -1,0 +1,829 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "inviter",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inviterScore",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "personScoreInviter",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inviterScoreLastUpdated",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "personScoreLastUpdatedInviter",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bonus",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct PosePoolType.BonusCalc",
+        "name": "record",
+        "type": "tuple"
+      }
+    ],
+    "name": "Debug",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseBonus",
+        "type": "uint256"
+      }
+    ],
+    "name": "GetBonus",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseReward",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "inviter1",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseBonus1",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "inviter2",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseBonus2",
+        "type": "uint256"
+      }
+    ],
+    "name": "GetReward",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "billId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Stake",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "billdIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "Withdraw",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "billdIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "WithdrawComplete",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "accessControl",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "inviterCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "compound",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "getActiveBills",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "billId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBill",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "who",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "depositTimestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerTotalSourcePaid",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardOriginal",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastGetRewardTimestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "withdrawn",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawUnlockTimestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardTaken",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PosePoolType.Bill",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "inviterCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getBonus",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "bonus1",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "bonus2",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "startTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastUpdateTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSupplySource",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerTotalSourceStored",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "angelPoseThreshold",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "oneDay",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PosePoolType.Config",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "getPerson",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "stakedSourceAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawingSourceAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAngel",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "scoreLastUpdated",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "score",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "withdrawnBillPendingReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accumulativeReward",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "scoreLastUpdatedInviter1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "scoreInviter1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bonus1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accumulativeBonus1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "scoreLastUpdatedInviter2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "scoreInviter2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bonus2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accumulativeBonus2",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PosePoolType.Person",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "inviterCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getReward",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "inviterCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRewardAndBonus",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "rewardPose",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "bonus1Pose",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "bonus2Pose",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "getWithdrawingBills",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "getWithdrawnBills",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "startTime_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "endTime_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rewardPerDay_",
+        "type": "uint256"
+      }
+    ],
+    "name": "initSet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastTimeRewardApplicable",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "rewardPerTotalSource",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newAssociatedOperator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "flag",
+        "type": "bool"
+      }
+    ],
+    "name": "setAssociatedOperator",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "angelPoseThreshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "setConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "inviterCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "stake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "stakedAccountContains",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakedAccountLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakedAccountsAt",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "rewardPerDay",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "endTime_",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateRewardRate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "rewardPerDay",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateRewardRateNotStart",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "billIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "inviterCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "billIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "inviterCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "withdrawComplete",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
