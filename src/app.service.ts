@@ -287,4 +287,95 @@ export class AppService {
     );
     return weeks;
   }
+
+  async totalStake(addresses: string[]) {
+    const ifoContract = getIfoContract();
+    const posePoolAddress = await ifoContract.PosePool.getAddress();
+
+    const total = _.chunk(addresses, this.AGGREGATE_BATCH_NUM)
+      .map(async (addrs) => {
+        const getPersonCalls = addrs.map((id) => ({
+          target: posePoolAddress,
+          callData: ifoContract.PosePool.interface.encodeFunctionData(
+            'getPerson',
+            [id],
+          ),
+        }));
+
+        const { returnData: personReturnData } =
+          await ifoContract.AggregateCall.aggregateStatic(getPersonCalls);
+        const personList = personReturnData.map(
+          (data) =>
+            ifoContract.PosePool.interface.decodeFunctionResult(
+              'getPerson',
+              data,
+            )[0] as PosePoolType.PersonStructOutput,
+        );
+
+        const stake = personList
+          .map((p) => p.stakedSourceAmount)
+          .reduce((p0, p) => p0 + p);
+        return stake;
+      })
+      .reduce((s0, s) => s0 + s);
+    return total;
+  }
+
+  async getInvitees(address: string): Promise<string[]> {
+    const ifoContract = getIfoContract();
+    const inviteeRecordsLength = Number(
+      await ifoContract.InvitationCenter.inviteeRecordsLength(address),
+    );
+
+    const invitationCenterAddress =
+      await ifoContract.InvitationCenter.getAddress();
+
+    const iis = [...Array(inviteeRecordsLength).keys()];
+
+    const allChunk = await Promise.all(
+      _.chunk(iis, this.AGGREGATE_BATCH_NUM).map(async (ii) => {
+        const accountAtCalls = ii.map((i) => ({
+          target: invitationCenterAddress,
+          callData: ifoContract.InvitationCenter.interface.encodeFunctionData(
+            'inviteeRecordsAt',
+            [address, i],
+          ),
+        }));
+
+        const { returnData: accountAtReturnData } =
+          await ifoContract.AggregateCall.aggregateStatic(accountAtCalls);
+        return accountAtReturnData.map(
+          (data) =>
+            ifoContract.InvitationCenter.interface.decodeFunctionResult(
+              'inviteeRecordsAt',
+              data,
+            )[0] as string,
+        );
+      }),
+    );
+
+    const accountIds = _.flatten(allChunk);
+    return accountIds;
+  }
+
+  async getStake(address: string) {
+    const ifoContract = getIfoContract();
+    const person = await ifoContract.PosePool.getPerson(address);
+    return person.stakedSourceAmount.toString();
+  }
+
+  async getStake1(address: string) {
+    const addresses = await this.getInvitees(address);
+    return this.totalStake(addresses);
+  }
+
+  async getStake2(address: string) {
+    const addresses = await this.getInvitees(address);
+    const allAddresses = _.flatten(
+      await Promise.all(
+        addresses.map(async (addrs) => await this.getInvitees(addrs)),
+      ),
+    );
+    return this.totalStake(allAddresses);
+  }
 }
