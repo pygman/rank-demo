@@ -13,18 +13,31 @@ export class AppController {
 
   @Get('/stake')
   async stake(@Query() { address }: { address: string }): Promise<string> {
-    return await this.appService.getStake(address);
+    if (!address) return '0';
+    try {
+      return await this.appService.getStake(address);
+    } catch (e) {
+      return '0';
+    }
   }
 
   @Get('/stake1')
   async stake1(@Query() { address }: { address: string }): Promise<string> {
-    return await this.appService.getStake1(address);
+    if (!address) return '0';
+    try {
+      return await this.appService.getStake1(address);
+    } catch (e) {
+      return '0';
+    }
   }
 
   @Get('/stake2')
   async stake2(@Query() { address }: { address: string }): Promise<string> {
-    return await this.appService.getStake2(address);
+    if (!address) return '0';
+    try {
+      return await this.appService.getStake2(address);
+    } catch (e) {
+      return '0';
+    }
   }
-
-
 }
