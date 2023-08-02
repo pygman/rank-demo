@@ -16,11 +16,21 @@ export class WeekService {
     return this.weekRepository.find({
       where: {
         date,
+        vip: 1,
       },
       order: {
         rank: 'ASC',
       },
       take: limit,
+    });
+  }
+
+  findOneByDate(address: string, date: number) {
+    return this.weekRepository.findOne({
+      where: {
+        address,
+        date,
+      },
     });
   }
 

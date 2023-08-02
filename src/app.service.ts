@@ -216,29 +216,28 @@ export class AppService {
       sundayRankMap.set(rank.address, rank);
     });
 
-    const weeks = [...rankMap.values()]
-      .filter((rank) => rank.vip > 0)
-      .map((rank) => {
-        const week = new Week();
-        week.address = rank.address;
-        week.stake = rank.stake;
-        week.stake1 = rank.stake1;
-        week.stake0 = rank.stake0;
-        const sundayRank = sundayRankMap.get(rank.address);
-        if (sundayRank) {
-          week.week_stake = BigInt(rank.stake) - BigInt(sundayRank.stake);
-          week.week_stake1 = BigInt(rank.stake1) - BigInt(sundayRank.stake1);
-          week.week_stake0 = BigInt(rank.stake0) - BigInt(sundayRank.stake0);
-        } else {
-          week.week_stake = BigInt(rank.stake);
-          week.week_stake1 = BigInt(rank.stake1);
-          week.week_stake0 = BigInt(rank.stake0);
-        }
-        week.bonus1 = rank.bonus1;
-        week.bonus2 = rank.bonus2;
-        week.date = rank.date;
-        return week;
-      });
+    const weeks = [...rankMap.values()].map((rank) => {
+      const week = new Week();
+      week.address = rank.address;
+      week.stake = rank.stake;
+      week.stake1 = rank.stake1;
+      week.stake0 = rank.stake0;
+      week.vip = rank.vip;
+      const sundayRank = sundayRankMap.get(rank.address);
+      if (sundayRank) {
+        week.week_stake = BigInt(rank.stake) - BigInt(sundayRank.stake);
+        week.week_stake1 = BigInt(rank.stake1) - BigInt(sundayRank.stake1);
+        week.week_stake0 = BigInt(rank.stake0) - BigInt(sundayRank.stake0);
+      } else {
+        week.week_stake = BigInt(rank.stake);
+        week.week_stake1 = BigInt(rank.stake1);
+        week.week_stake0 = BigInt(rank.stake0);
+      }
+      week.bonus1 = rank.bonus1;
+      week.bonus2 = rank.bonus2;
+      week.date = rank.date;
+      return week;
+    });
 
     weeks.sort((a, b) => {
       if (a.week_stake0 > b.week_stake0) return -1;
@@ -286,6 +285,23 @@ export class AppService {
       )}`,
     );
     return weeks;
+  }
+
+  async getStaking(address: string): Promise<Week> {
+    const now = new Date();
+    let day = Math.floor(now.getTime() / 1000 / 60 / 60 / 24);
+
+    let staking = await this.weekService.findOneByDate(address, day);
+
+    if (!staking) {
+      day -= 1;
+      staking = await this.weekService.findOneByDate(address, day);
+    }
+
+    console.log(
+      `get staking address: ${address} ${now} day: ${day} return ${staking?.stake0}`,
+    );
+    return staking;
   }
 
   async totalStake(addresses: string[]) {

@@ -19,6 +19,9 @@ export class Week {
   @Column({ type: 'text', nullable: true })
   stake0?: bigint | string;
 
+  @Column({ type: 'integer', nullable: true })
+  vip?: number;
+
   @Column({ type: 'text', nullable: true })
   week_stake: bigint | string;
 

@@ -11,6 +11,12 @@ export class AppController {
     return await this.appService.getWeeklyRank();
   }
 
+  @Get('/staking')
+  async staking(@Query() { address }: { address: string }): Promise<Week> {
+    if (!address) return new Week();
+    return await this.appService.getStaking(address);
+  }
+
   @Get('/stake')
   async stake(@Query() { address }: { address: string }): Promise<string> {
     if (!address) return '0';
