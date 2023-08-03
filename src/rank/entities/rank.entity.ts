@@ -17,6 +17,9 @@ export class Rank {
   stake1?: bigint | string;
 
   @Column({ type: 'text', nullable: true })
+  stake2?: bigint | string;
+
+  @Column({ type: 'text', nullable: true })
   stake0?: bigint | string;
 
   @Column({ type: 'integer', nullable: true })

@@ -1,10 +1,15 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query } from "@nestjs/common";
 import { AppService } from './app.service';
 import { Week } from './week/entities/week.entity';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
+
+  @Post('/flush_rank')
+  async flushRank(): Promise<any> {
+    return await this.appService.flushRank();
+  }
 
   @Get('/weekly-rank')
   async weeklyRank(): Promise<Week[]> {

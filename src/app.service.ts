@@ -18,8 +18,8 @@ export class AppService {
 
   AGGREGATE_BATCH_NUM = 20;
 
-  MIN_STAKE_1 = 5000n * 1000000000000000000n;
-  MIN_STAKE_0 = 50000n * 1000000000000000000n;
+  MIN_STAKE = 5000n * 1000000000000000000n;
+  MIN_STAKE_1_2 = 50000n * 1000000000000000000n;
 
   FLUSH_LOCK = null;
 
@@ -156,7 +156,7 @@ export class AppService {
 
     const calcRank = (address: string) => {
       const rank = rankMap.get(address);
-      if (!rank) return { s1: 0n, s0: 0n };
+      if (!rank) return { s1: 0n, s2: 0n, s0: 0n };
       if (rank.stake0 === undefined) {
         const cs = pMap.get(address);
         if (cs && cs.length > 0) {
@@ -164,17 +164,21 @@ export class AppService {
             .map((a) => calcRank(a))
             .reduce((acc, b) => ({
               s1: acc.s1 + b.s1,
+              s2: acc.s2 + b.s2,
               s0: acc.s0 + b.s0,
             }));
           rank.stake1 = ss.s1;
+          rank.stake2 = ss.s2;
           rank.stake0 = ss.s0;
         } else {
           rank.stake1 = 0n;
+          rank.stake2 = 0n;
           rank.stake0 = 0n;
         }
       }
       return {
         s1: rank.stake as bigint,
+        s2: rank.stake1 as bigint,
         s0: (rank.stake as bigint) + (rank.stake0 as bigint),
       };
     };
@@ -191,10 +195,12 @@ export class AppService {
       ranks.forEach((rank) => {
         rank.stake = rank.stake.toString();
         rank.vip =
-          rank.stake1 >= this.MIN_STAKE_1 && rank.stake0 >= this.MIN_STAKE_0
+          rank.stake >= this.MIN_STAKE &&
+          rank.stake1 + rank.stake2 >= this.MIN_STAKE_1_2
             ? 1
             : 0;
         rank.stake1 = rank.stake1.toString();
+        rank.stake2 = rank.stake2.toString();
         rank.stake0 = rank.stake0.toString();
         rank.bonus1 = rank.bonus1.toString();
         rank.bonus2 = rank.bonus2.toString();
@@ -221,16 +227,19 @@ export class AppService {
       week.address = rank.address;
       week.stake = rank.stake;
       week.stake1 = rank.stake1;
+      week.stake2 = rank.stake2;
       week.stake0 = rank.stake0;
       week.vip = rank.vip;
       const sundayRank = sundayRankMap.get(rank.address);
       if (sundayRank) {
         week.week_stake = BigInt(rank.stake) - BigInt(sundayRank.stake);
         week.week_stake1 = BigInt(rank.stake1) - BigInt(sundayRank.stake1);
+        week.week_stake2 = BigInt(rank.stake2) - BigInt(sundayRank.stake2);
         week.week_stake0 = BigInt(rank.stake0) - BigInt(sundayRank.stake0);
       } else {
         week.week_stake = BigInt(rank.stake);
         week.week_stake1 = BigInt(rank.stake1);
+        week.week_stake2 = BigInt(rank.stake2);
         week.week_stake0 = BigInt(rank.stake0);
       }
       week.bonus1 = rank.bonus1;
@@ -240,8 +249,12 @@ export class AppService {
     });
 
     weeks.sort((a, b) => {
-      if (a.week_stake0 > b.week_stake0) return -1;
-      if (a.week_stake0 < b.week_stake0) return 1;
+      const a_stake =
+        BigInt(a.week_stake) + BigInt(a.week_stake1) + BigInt(a.week_stake2);
+      const b_stake =
+        BigInt(b.week_stake) + BigInt(b.week_stake1) + BigInt(b.week_stake2);
+      if (a_stake > b_stake) return -1;
+      if (a_stake < b_stake) return 1;
       return 0;
     });
 
@@ -249,6 +262,7 @@ export class AppService {
       week.rank = index + 1;
       week.week_stake = week.week_stake.toString();
       week.week_stake1 = week.week_stake1.toString();
+      week.week_stake2 = week.week_stake2.toString();
       week.week_stake0 = week.week_stake0.toString();
     });
 
