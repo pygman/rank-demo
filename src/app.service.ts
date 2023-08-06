@@ -214,7 +214,8 @@ export class AppService {
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const sunday = day - now.getDay();
+    const wDay = now.getDay();
+    const sunday = wDay === 0 ? day - wDay - 7 : day - wDay;
 
     const sundayRanks = await this.rankService.findByDate(sunday);
     const sundayRankMap = new Map<string, Rank>();
