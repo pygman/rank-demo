@@ -322,8 +322,8 @@ export class AppService {
     const ifoContract = getIfoContract();
     const posePoolAddress = await ifoContract.PosePool.getAddress();
 
-    const total = _.chunk(addresses, this.AGGREGATE_BATCH_NUM)
-      .map(async (addrs) => {
+    const totals = await Promise.all(
+      _.chunk(addresses, this.AGGREGATE_BATCH_NUM).map(async (addrs) => {
         const getPersonCalls = addrs.map((id) => ({
           target: posePoolAddress,
           callData: ifoContract.PosePool.interface.encodeFunctionData(
@@ -346,9 +346,9 @@ export class AppService {
           .map((p) => p.stakedSourceAmount)
           .reduce((p0, p) => p0 + p);
         return stake;
-      })
-      .reduce((s0, s) => s0 + s);
-    return total;
+      }),
+    );
+    return totals.reduce((t0: bigint, t: bigint) => t0 + t);
   }
 
   async getInvitees(address: string): Promise<string[]> {
@@ -406,6 +406,6 @@ export class AppService {
         addresses.map(async (addrs) => await this.getInvitees(addrs)),
       ),
     );
-    return this.totalStake(allAddresses);
+    return await this.totalStake(allAddresses);
   }
 }
