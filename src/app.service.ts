@@ -223,37 +223,51 @@ export class AppService {
       sundayRankMap.set(rank.address, rank);
     });
 
-    const weeks = [...rankMap.values()].map((rank) => {
-      const week = new Week();
-      week.address = rank.address;
-      week.stake = rank.stake;
-      week.stake1 = rank.stake1;
-      week.stake2 = rank.stake2;
-      week.stake0 = rank.stake0;
-      week.vip = rank.vip;
-      const sundayRank = sundayRankMap.get(rank.address);
-      if (sundayRank) {
-        week.week_stake = BigInt(rank.stake) - BigInt(sundayRank.stake);
-        week.week_stake1 = BigInt(rank.stake1) - BigInt(sundayRank.stake1);
-        week.week_stake2 = BigInt(rank.stake2) - BigInt(sundayRank.stake2);
-        week.week_stake0 = BigInt(rank.stake0) - BigInt(sundayRank.stake0);
-      } else {
-        week.week_stake = BigInt(rank.stake);
-        week.week_stake1 = BigInt(rank.stake1);
-        week.week_stake2 = BigInt(rank.stake2);
-        week.week_stake0 = BigInt(rank.stake0);
-      }
-      week.bonus1 = rank.bonus1;
-      week.bonus2 = rank.bonus2;
-      week.date = rank.date;
-      return week;
-    });
+    const weeks = [...rankMap.values()]
+      .filter((rank) => rank.vip > 0)
+      .map((rank) => {
+        const week = new Week();
+        week.address = rank.address;
+        week.stake = rank.stake;
+        week.stake1 = rank.stake1;
+        week.stake2 = rank.stake2;
+        week.stake0 = rank.stake0;
+        week.vip = rank.vip;
+        const sundayRank = sundayRankMap.get(rank.address);
+        if (sundayRank) {
+          week.week_stake = BigInt(rank.stake) - BigInt(sundayRank.stake);
+          week.week_stake1 = BigInt(rank.stake1) - BigInt(sundayRank.stake1);
+          week.week_stake2 = BigInt(rank.stake2) - BigInt(sundayRank.stake2);
+          week.week_stake0 = BigInt(rank.stake0) - BigInt(sundayRank.stake0);
+        } else {
+          week.week_stake = BigInt(rank.stake);
+          week.week_stake1 = BigInt(rank.stake1);
+          week.week_stake2 = BigInt(rank.stake2);
+          week.week_stake0 = BigInt(rank.stake0);
+        }
+        week.bonus1 = rank.bonus1;
+        week.bonus2 = rank.bonus2;
+        week.date = rank.date;
+        return week;
+      });
 
+    /*
+    // sort by only this week stake
     weeks.sort((a, b) => {
       const a_stake =
         BigInt(a.week_stake) + BigInt(a.week_stake1) + BigInt(a.week_stake2);
       const b_stake =
         BigInt(b.week_stake) + BigInt(b.week_stake1) + BigInt(b.week_stake2);
+      if (a_stake > b_stake) return -1;
+      if (a_stake < b_stake) return 1;
+      return 0;
+    });
+     */
+
+    // sort by total stake
+    weeks.sort((a, b) => {
+      const a_stake = BigInt(a.stake) + BigInt(a.stake1) + BigInt(a.stake2);
+      const b_stake = BigInt(b.stake) + BigInt(b.stake1) + BigInt(b.stake2);
       if (a_stake > b_stake) return -1;
       if (a_stake < b_stake) return 1;
       return 0;
