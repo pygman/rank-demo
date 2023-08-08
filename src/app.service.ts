@@ -423,4 +423,24 @@ export class AppService {
     );
     return await this.totalStake(allAddresses);
   }
+
+  async getStake1And2(address: string) {
+    const addresses = await this.getInvitees(address);
+    const allAddresses = _.flatten(
+      await Promise.all(
+        addresses.map(async (addrs) => await this.getInvitees(addrs)),
+      ),
+    );
+    return await this.totalStake([...addresses, ...allAddresses]);
+  }
+
+  async getStakeAnd1And2(address: string) {
+    const addresses = await this.getInvitees(address);
+    const allAddresses = _.flatten(
+      await Promise.all(
+        addresses.map(async (addrs) => await this.getInvitees(addrs)),
+      ),
+    );
+    return await this.totalStake([address, ...addresses, ...allAddresses]);
+  }
 }

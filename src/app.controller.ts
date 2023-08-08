@@ -51,4 +51,26 @@ export class AppController {
       return '0';
     }
   }
+
+  @Get('/stake-1-2')
+  async stake1And2(@Query() { address }: { address: string }): Promise<string> {
+    if (!address) return '0';
+    try {
+      return await this.appService.getStake1And2(address);
+    } catch (e) {
+      return '0';
+    }
+  }
+
+  @Get('/stake-0-1-2')
+  async stakeAnd1And2(
+    @Query() { address }: { address: string },
+  ): Promise<string> {
+    if (!address) return '0';
+    try {
+      return await this.appService.getStakeAnd1And2(address);
+    } catch (e) {
+      return '0';
+    }
+  }
 }
