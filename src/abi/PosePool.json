@@ -172,6 +172,37 @@
       },
       {
         "indexed": false,
+        "internalType": "uint256",
+        "name": "usdtAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "billId",
+        "type": "uint256"
+      }
+    ],
+    "name": "StakeUsdt",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256[]",
         "name": "billdIds",
         "type": "uint256[]"
@@ -206,6 +237,31 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "ticketNumber",
+        "type": "uint256"
+      }
+    ],
+    "name": "WithdrawPose",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "accessControl",
     "outputs": [
@@ -213,6 +269,131 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "priceFixedPoint18",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PosePoolType.PoseUsdtPriceParam",
+        "name": "param",
+        "type": "tuple"
+      }
+    ],
+    "name": "calcPoseUsdtPriceParamDigest",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "priceFixedPoint18",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PosePoolType.PoseUsdtPriceParam",
+        "name": "param",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct PosePoolType.Signature",
+        "name": "signature",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "calcStakeUsdt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "usdtAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "who",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "poseAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ticketNumber",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PosePoolType.WithdrawPoseParam",
+        "name": "param",
+        "type": "tuple"
+      }
+    ],
+    "name": "calcWithdrawPoseParamDigest",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -229,6 +410,19 @@
     "name": "compound",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "domainSeparator",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -492,6 +686,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getPoseUsdtPriceParam",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -537,6 +744,38 @@
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getWithdrawPoseParamTypeHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "ticketNumbers",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getWithdrawPoseTicket",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -627,6 +866,30 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "pose",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      }
+    ],
+    "name": "poseToUsd",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "usdt",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
@@ -691,6 +954,63 @@
       }
     ],
     "name": "stake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "priceFixedPoint18",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestamp",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PosePoolType.PoseUsdtPriceParam",
+        "name": "param",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct PosePoolType.Signature",
+        "name": "signature",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "inviterCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "stakeUsdt",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -793,6 +1113,25 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "poseAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "validatePoseAmount",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256[]",
         "name": "billIds",
         "type": "uint256[]"
@@ -822,6 +1161,58 @@
       }
     ],
     "name": "withdrawComplete",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "who",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "poseAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ticketNumber",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PosePoolType.WithdrawPoseParam",
+        "name": "param",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "r",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "s",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint8",
+            "name": "v",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct PosePoolType.Signature",
+        "name": "signature",
+        "type": "tuple"
+      }
+    ],
+    "name": "withdrawPose",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

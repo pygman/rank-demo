@@ -12,6 +12,9 @@ import { Rank } from './rank/entities/rank.entity';
 import { Week } from './week/entities/week.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ScheduleService } from './schedule.service';
+import { TicketModule } from './ticket/ticket.module';
+import { Ticket } from './ticket/entities/ticket.entity';
+import { TicketService } from './ticket/ticket.service';
 
 dotenv.config();
 
@@ -26,10 +29,18 @@ dotenv.config();
     ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([Rank]),
     TypeOrmModule.forFeature([Week]),
+    TypeOrmModule.forFeature([Ticket]),
     RankModule,
     WeekModule,
+    TicketModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ScheduleService, RankService, WeekService],
+  providers: [
+    AppService,
+    ScheduleService,
+    RankService,
+    WeekService,
+    TicketService,
+  ],
 })
 export class AppModule {}

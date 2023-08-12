@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Week } from './week/entities/week.entity';
+import { Ticket } from './ticket/entities/ticket.entity';
 
 @Controller()
 export class AppController {
@@ -9,6 +10,14 @@ export class AppController {
   @Post('/flush_rank')
   async flushRank(): Promise<any> {
     return await this.appService.flushRank();
+  }
+
+  @Get('/withdraw-tickets')
+  async withdrawTickets(
+    @Query() { address }: { address: string },
+  ): Promise<{ claimed: string; tickets: Ticket[] }> {
+    if (!address) return { claimed: '0', tickets: [] };
+    return await this.appService.withdrawTickets(address);
   }
 
   @Get('/weekly-rank')

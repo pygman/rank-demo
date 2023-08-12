@@ -8,12 +8,16 @@ import { Rank } from './rank/entities/rank.entity';
 import * as process from 'process';
 import { Week } from './week/entities/week.entity';
 import { WeekService } from './week/week.service';
+import { ethers } from 'ethers';
+import { Ticket } from './ticket/entities/ticket.entity';
+import { TicketService } from './ticket/ticket.service';
 
 @Injectable()
 export class AppService {
   constructor(
     private readonly rankService: RankService,
     private readonly weekService: WeekService,
+    private readonly ticketService: TicketService,
   ) {}
 
   AGGREGATE_BATCH_NUM = 20;
@@ -289,7 +293,112 @@ export class AppService {
     console.log(`\nend save week ${day}`);
     this.FLUSH_LOCK = null;
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const TOTAL_REWARD = 4800n * 1000000000000000000n;
+    // 每次总量固定，50%按1 2 3名的(自己和一级和二级质押总和) 质押比例发，4-21名等比例分50%
+
+    // TODO
+    if (wDay === 5) {
+      let tickets = weeks
+        .filter((week) => week.vip > 0)
+        .slice(0, this.TOP_LIMIT)
+        .map((week) => {
+          const ticket = new Ticket();
+          ticket.who = week.address;
+          ticket.rank = week.rank;
+          ticket.date = week.date;
+          ticket.stakes =
+            BigInt(week.stake) + BigInt(week.stake1) + BigInt(week.stake2);
+          return ticket;
+        });
+
+      const tickets_stage1 = tickets.slice(0, 3);
+      const stakes_stage1 = tickets_stage1.reduce(
+        (acc, t) => acc + (t.stakes as bigint),
+        0n,
+      );
+      tickets_stage1.forEach((ticket) => {
+        ticket.poseAmount =
+          ((TOTAL_REWARD / 2n) * (ticket.stakes as bigint)) / stakes_stage1;
+      });
+
+      const tickets_stage2 =
+        tickets.length > 3 ? tickets.slice(3, this.TOP_LIMIT) : [];
+      const stakes_stage2 = tickets_stage2.reduce(
+        (acc, t) => acc + (t.stakes as bigint),
+        0n,
+      );
+      tickets_stage2.forEach((ticket) => {
+        ticket.poseAmount =
+          ((TOTAL_REWARD / 2n) * (ticket.stakes as bigint)) / stakes_stage2;
+      });
+
+      tickets = [...tickets_stage1, ...tickets_stage2];
+      for (const ticket of tickets) {
+        ticket.stakes = ticket.stakes.toString();
+        ticket.poseAmount = ticket.poseAmount.toString();
+      }
+      tickets = await this.ticketService.save(tickets);
+      for (const ticket of tickets) {
+        ticket.ticketNumber = ticket.id.toString();
+        const withdrawPoseParam: PosePoolType.WithdrawPoseParamStruct = {
+          who: ticket.who,
+          poseAmount: ticket.poseAmount,
+          ticketNumber: ticket.ticketNumber,
+        };
+        const digest = await ifoContract.PosePool.calcWithdrawPoseParamDigest(
+          withdrawPoseParam,
+        );
+        const signingKey = new ethers.SigningKey(process.env.SERVER_PK);
+        const signature = signingKey.sign(digest);
+        ticket.signature = signature.serialized;
+      }
+      await this.ticketService.save(tickets);
+    }
+
     return {};
+  }
+
+  async checkWithdrawn() {
+    const AGGREGATE_COUNT = 30;
+    const ifoContract = getIfoContract();
+    const tickets = await this.ticketService.findDidNotWithdrawn();
+    if (!tickets || tickets.length === 0) return;
+    for (const tickets_chunk of _.chunk(tickets, AGGREGATE_COUNT)) {
+      console.log(
+        `start getWithdrawPoseTicket ==> ${tickets_chunk.map(
+          (t) => t.ticketNumber,
+        )} <==`,
+      );
+
+      const addresses = await ifoContract.PosePool.getWithdrawPoseTicket(
+        tickets_chunk.map((t) => t.ticketNumber),
+      );
+      const withdrawnTickets = _.unzip([tickets_chunk, addresses])
+        .filter(([_, address]) => BigInt(address) !== 0n)
+        .map(([ticket, address]) => {
+          ticket.withdrawn = address;
+          return ticket;
+        });
+      console.log('update check ', withdrawnTickets);
+      await this.ticketService.save(withdrawnTickets);
+    }
+  }
+
+  async withdrawTickets(
+    address: string,
+  ): Promise<{ claimed: string; tickets: Ticket[] }> {
+    const withdrawnTickets = await this.ticketService.withdrawnTickets(address);
+    const claimed = withdrawnTickets
+      .map((t) => BigInt(t.poseAmount ?? 0))
+      .reduce((acc, a) => acc + a, 0n)
+      .toString();
+    const tickets = await this.ticketService.toWithdrawTickets(address);
+    return { claimed, tickets };
   }
 
   async getWeeklyRank(): Promise<Week[]> {
